@@ -65,7 +65,8 @@ sub {
             my $offset = 1;
 
             if ($event->text =~ /([0-9]+)ページ/){
-                $offset = $1 * 10;
+                $offset = ($1-1) * 10;
+                $offset = 1 if $offset == 0;
             }
 
             my $sell_id = 6565;
