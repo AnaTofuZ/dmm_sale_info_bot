@@ -34,8 +34,17 @@ sub {
     for my $event (@{ $events }) {
         if ($event->is_user_event && $event->is_message_event && $event->is_text_message) {
 
+            if ($event->text eq "使い方" ){
+                my $info = "[教えて] もしくは [2ページ] というと教えてくれます";
+                my $messages = LINE::Bot::API::Builder::SendMessage->new()->add_text( text => $info);
+                my $res = $bot->reply_message($event->reply_token,$messages->build);
+                p $res;
+                ... unless $res->is_success; # error handling
+                next;
+            }
 
-            if ($event->text !~ /教えて/){
+
+            if ($event->text !~ /教えて|[0-9]ページ/){
                 my @message = (qw/
                                     芸術家といふのは自然の変種です。
                                     人間、正道を歩むのは却つて不安なものだ。
@@ -52,10 +61,16 @@ sub {
                 ... unless $res->is_success; # error handling
                 next;
             }
+    
+            my $offset = 1;
+
+            if ($event->text =~ /([0-9]+)ページ/){
+                $offset = $1 * 10;
+            }
 
             my $sell_id = 6565;
 
-            my $items = $dmm->item("DMM.R18", +{ sort => "ranking", service => "digital", floor => "videoa", article => "keyword" , hits => 100, article_id => $sell_id })->{items};
+            my $items = $dmm->item("DMM.R18", +{ sort => "ranking", service => "digital", floor => "videoa", article => "keyword" , hits => 10, article_id => $sell_id ,offset => $offset})->{items};
 
             if ( @{$items} == 0){
                 my $messages = LINE::Bot::API::Builder::SendMessage->new()->add_text( text => "なんか見つかんなかった…");
