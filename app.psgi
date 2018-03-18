@@ -10,6 +10,7 @@ use WebService::YDMM;
 use List::Util qw/shuffle/;
 use utf8;
 use Encode;
+use DDP { deparse => 1 };
 
 my $bot = LINE::Bot::API->new(
     channel_secret => $ENV{LINE_SECRET},
@@ -47,6 +48,7 @@ sub {
 
                 my $messages = LINE::Bot::API::Builder::SendMessage->new()->add_text( text => $rand_m);
                 my $res = $bot->reply_message($event->reply_token,$messages->build);
+                p $res;
                 ... unless $res->is_success; # error handling
                 next;
             }
@@ -101,6 +103,7 @@ sub {
 
             my $messages = LINE::Bot::API::Builder::SendMessage->new()->add_template($carousel->build);
             my $res = $bot->reply_message($event->reply_token,$messages->build);
+            p $res;
             ... unless $res->is_success; # error handling
         }
     }
